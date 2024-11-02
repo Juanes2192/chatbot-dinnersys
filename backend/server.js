@@ -11,9 +11,9 @@ const io = new Server(server, {
 
 // Definimos las categorías y productos
 const categories = {
-  burgers: ["Classic Burger", "Cheese Burger", "Double Burger"],
+  burgers: ["Hamburguesa Clasica", "Hamburguesa de queso", "Hamburguesa Doble"],
   drinks: ["Coca-Cola", "Sprite", "Fanta"],
-  sides: ["Fries", "Onion Rings", "Chicken Nuggets"]
+  sides: ["Papas a la francesa", "Aros de Cebolla", "Nuggets de pollo"]
 };
 
 const userStates = {};
@@ -23,7 +23,7 @@ io.on('connection', (socket) => {
 
   socket.on('startConversation', () => {
     userStates[socket.id] = { stage: 'welcome', cart: [] };
-    socket.emit('botMessage', '👋 Bienvenido al chatbot de FastFood.\n\nSelecciona una categoría escribiendo el número correspondiente:\n1. 🍔 Burgers\n2. 🥤 Drinks\n3. 🍟 Sides');
+    socket.emit('botMessage', '👋 Bienvenido al chatbot de FastFood.\n\nSelecciona una categoría escribiendo el número correspondiente:\n1. 🍔 Hamburguesas\n2. 🥤 Bebidas\n3. 🍟 Pasabocas');
   });
 
   socket.on('userMessage', (msg) => {
@@ -43,10 +43,11 @@ io.on('connection', (socket) => {
           userState.category = 'sides';
           break;
         default:
-          socket.emit('botMessage', '⚠️ Opción no válida. Por favor, elige una categoría:\n1. 🍔 Burgers\n2. 🥤 Drinks\n3. 🍟 Sides');
+          socket.emit('botMessage', '⚠️ Opción no válida. Por favor, elige una categoría:\n1. 🍔 Hamburguesas\n2. 🥤 Bebidas\n3. 🍟 Pasabocas');
           return;
       }
       userState.stage = 'selectingProduct';
+      userState.cart = []; // Reinicia el carrito
       const products = categories[userState.category];
       const productOptions = products.map((product, index) => `${index + 1}. ${product}`).join('\n');
       socket.emit('botMessage', `Has seleccionado la categoría ${userState.category}.\n\nElige un producto:\n${productOptions}`);
@@ -54,12 +55,54 @@ io.on('connection', (socket) => {
       // Selección de productos
       const products = categories[userState.category];
       if (selectedOption > 0 && selectedOption <= products.length) {
-        const selectedProduct = products[selectedOption - 1];
-        userState.cart.push(selectedProduct);
-        socket.emit('botMessage', `✅ ${selectedProduct} ha sido agregado a tu carrito.\n\n¿Quieres agregar otro producto? Escribe el número de otra categoría o escribe "finalizar" para completar tu pedido.`);
-        userState.stage = 'welcome';
+        userState.selectedProduct = products[selectedOption - 1];
+        userState.stage = 'selectingQuantity';
+        socket.emit('botMessage', `¿Cuántos de ${userState.selectedProduct} quieres?`);
       } else {
         socket.emit('botMessage', `⚠️ Opción no válida. Por favor elige un producto válido:\n${products.map((product, index) => `${index + 1}. ${product}`).join('\n')}`);
+      }
+    } else if (userState.stage === 'selectingQuantity') {
+      // Selección de cantidad
+      const quantity = parseInt(msg);
+      if (!isNaN(quantity) && quantity > 0) {
+        userState.cart.push(`${userState.selectedProduct} x ${quantity}`);
+        // Envía la actualización del carrito al cliente
+        io.to(socket.id).emit('updateCart', userState.cart);
+        socket.emit('botMessage', `✅ ${userState.selectedProduct} x ${quantity} ha sido agregado a tu carrito.\n\nElige una opción:\n1. Elegir otro plato de esta categoría\n2. Volver al menú de categorías\n3. Finalizar pedido`);
+        userState.stage = 'selectingOptions';
+      } else {
+        socket.emit('botMessage', '⚠️ Cantidad no válida. Por favor, indica una cantidad válida.');
+      }
+    } else if (userState.stage === 'selectingOptions') {
+      // Opciones después de la selección
+      switch (selectedOption) {
+        case 1:
+          const products = categories[userState.category];
+          const productOptions = products.map((product, index) => `${index + 1}. ${product}`).join('\n');
+          socket.emit('botMessage', `Elige otro producto:\n${productOptions}`);
+          userState.stage = 'selectingProduct';
+          break;
+        case 2:
+          userState.stage = 'welcome';
+          socket.emit('botMessage', 'Selecciona una categoría escribiendo el número correspondiente:\n1. 🍔 Hamburguesas\n2. 🥤 Bebidas\n3. 🍟 Pasabocas');
+          break;
+        case 3:
+          userState.stage = 'selectingPayment';
+          socket.emit('botMessage', '¿Cuál es tu método de pago?\n1. Nequi\n2. Bancolombia');
+          break;
+        default:
+          socket.emit('botMessage', '⚠️ Opción no válida. Por favor, elige:\n1. Elegir otro plato de esta categoría\n2. Volver al menú de categorías\n3. Finalizar pedido');
+      }
+    } else if (userState.stage === 'selectingPayment') {
+      // Selección de método de pago
+      switch (selectedOption) {
+        case 1:
+        case 2:
+          socket.emit('botMessage', `Pedido realizado. ¡Gracias por tu compra! Tu método de pago es ${selectedOption === 1 ? 'Nequi' : 'Bancolombia'}.`);
+          userStates[socket.id] = { stage: 'welcome', cart: [] }; // Reinicia el estado del usuario
+          break;
+        default:
+          socket.emit('botMessage', '⚠️ Opción no válida. Por favor, elige un método de pago:\n1. Nequi\n2. Bancolombia');
       }
     }
   });

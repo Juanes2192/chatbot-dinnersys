@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
+import Cart from './Cart'; // Importa el nuevo componente
 
-const socket = io('http://localhost:3000'); // Asegúrate de que esta URL sea la correcta
+const socket = io('http://localhost:3000');
 
 function Chatbot() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [cartItems, setCartItems] = useState([]); // Estado para el carrito
 
   useEffect(() => {
     socket.emit('startConversation');
@@ -14,8 +16,13 @@ function Chatbot() {
       setMessages((prevMessages) => [...prevMessages, { sender: 'Bot', text: message }]);
     });
 
+    socket.on('updateCart', (cart) => {
+      setCartItems(cart); // Actualiza el carrito cuando el servidor lo envíe
+    });
+
     return () => {
       socket.off('botMessage');
+      socket.off('updateCart');
     };
   }, []);
 
@@ -39,40 +46,28 @@ function Chatbot() {
               padding: '10px',
               borderRadius: '15px',
               maxWidth: '70%',
-              whiteSpace: 'pre-wrap' // Para mostrar saltos de línea en los mensajes
+              whiteSpace: 'pre-wrap'
             }}>
-              <strong>{msg.sender}:</strong> {msg.text}
+              {msg.text}
             </div>
           </div>
         ))}
       </div>
-      <div style={{ marginTop: '10px' }}>
+      <div style={{ display: 'flex', marginTop: '10px' }}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-          style={{ width: '80%', padding: '10px', fontSize: '16px' }}
-          placeholder="Escribe el número de la opción..."
+          onKeyPress={(e) => (e.key === 'Enter' ? sendMessage() : null)}
+          placeholder="Escribe tu mensaje..."
+          style={{ flex: 1, padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
         />
-        <button onClick={sendMessage} style={{ padding: '10px', fontSize: '16px', marginLeft: '5px' }}>
+        <button onClick={sendMessage} style={{ marginLeft: '10px', padding: '10px 15px', borderRadius: '4px', border: 'none', backgroundColor: '#4CAF50', color: '#fff' }}>
           Enviar
         </button>
       </div>
-      <div style={{ marginTop: '20px' }}>
-        <h3>Carrito de Compras</h3>
-        {messages.find(msg => msg.sender === 'Bot' && msg.text.includes("agregado a tu carrito")) ? (
-          <ul>
-            {messages
-              .filter(msg => msg.text.includes("ha sido agregado a tu carrito"))
-              .map((msg, index) => (
-                <li key={index}>{msg.text.replace("✅ ", "").replace(" ha sido agregado a tu carrito.", "")}</li>
-              ))}
-          </ul>
-        ) : (
-          <p>Tu carrito está vacío.</p>
-        )}
-      </div>
+      {/* Agrega el componente Cart aquí */}
+      <Cart cartItems={cartItems} />
     </div>
   );
 }
