@@ -16,13 +16,22 @@ function Cart({ cartItems }) {
                 ) : (
                     <ul>
                         {cartItems.map((item, index) => (
-                            <li key={index}>{item}</li>
+                            <li key={index}>
+                                Producto: {item.product} - Cantidad: {item.quantity}
+                            </li>
                         ))}
                     </ul>
                 )}
             </div>
             <div>
-                <button style={{ marginLeft: '10px', padding: '10px 15px', borderRadius: '4px', border: 'none', backgroundColor: '#4CAF50', color: '#fff' }}>
+                <button style={{
+                    marginLeft: '10px',
+                    padding: '10px 15px',
+                    borderRadius: '4px',
+                    border: 'none',
+                    backgroundColor: '#4CAF50',
+                    color: '#fff'
+                }}>
                     Hacer Pedido
                 </button>
             </div>
