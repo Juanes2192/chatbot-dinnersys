@@ -72,12 +72,21 @@ app.get('/api/productos/:categoriaId', (req, res) => {
 io.on('connection', (socket) => {
     console.log('Cliente conectado');
 
-    // Emitir un mensaje de bienvenida al cliente
-    socket.emit('botMessage', '¡Hola! ¿En qué puedo ayudarte?');
-
-    // Evento para iniciar la conversación
+    // Limpiar mensajes antiguos al iniciar la conversación
     socket.on('startConversation', () => {
         socket.emit('botMessage', '¡Hola! ¿En qué puedo ayudarte?');
+
+        // Obtener las categorías y enviarlas al cliente
+        const query = 'SELECT NombreCategoria FROM Categorias';
+        db.query(query, (error, results) => {
+            if (error) {
+                console.error('Error al obtener categorías:', error);
+                socket.emit('botMessage', 'Error al obtener categorías');
+                return;
+            }
+            const categorias = results.map((categoria, index) => `${index + 1}. ${categoria.NombreCategoria}`).join('\n');
+            socket.emit('botMessage', `Categorías disponibles:\n${categorias}`);
+        });
     });
 
     // Evento de desconexión
