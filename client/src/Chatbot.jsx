@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import Cart from './Cart';
-import './Chatbot.css'
+import './Chatbot.css';
 
 function Chatbot() {
   const [messages, setMessages] = useState([]);
@@ -45,17 +45,13 @@ function Chatbot() {
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto font-sans bg-white shadow-lg rounded-lg border border-gray-300">
-      <h2 className="text-2xl font-semibold mb-5 text-center text-gray-800">Chatbot de Pedidos - FastFood</h2>
+    <div className="chatbot-container">
+      <h2 className="chatbot-title">Chatbot de Pedidos - FastFood</h2>
       
-      <div className="chatbox border rounded-lg p-5 h-96 overflow-y-auto bg-gray-100">
+      <div className="chatbox">
         {messages.map((msg, index) => (
-          <div key={index} className={`my-2 flex ${msg.sender === 'Bot' ? 'justify-start' : 'justify-end'}`}>
-            <div
-              className={`p-3 rounded-xl max-w-[70%] whitespace-pre-wrap shadow-md ${
-                msg.sender === 'Bot' ? 'bg-gray-300 text-gray-900' : 'bg-blue-600 text-white'
-              }`}
-            >
+          <div key={index} className={`chatbox-message ${msg.sender === 'Bot' ? 'bot' : 'user'}`}>
+            <div className={`chatbox-bubble ${msg.sender === 'Bot' ? 'bot' : 'user'}`}>
               {msg.text}
             </div>
           </div>
@@ -63,18 +59,18 @@ function Chatbot() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="mt-4 flex items-center border-t pt-4">
+      <div className="message-input-container">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
           placeholder="Escribe tu mensaje..."
-          className="flex-1 px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-700"
+          className="message-input"
         />
         <button
           onClick={sendMessage}
-          className="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+          className="message-send-button"
         >
           Enviar
         </button>

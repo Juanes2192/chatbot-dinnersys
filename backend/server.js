@@ -38,7 +38,7 @@ const userStates = {};
 const paymentMethods = ['Nequi', 'Bancolombia'];
 
 const botResponses = {
-  welcome: '👋 Bienvenido al chatbot de DinnerSys.\n\nSelecciona una categoría escribiendo el número correspondiente:',
+  welcome: '👋 Bienvenido al chatbot de DinnerSys.\n\n\n Selecciona una categoría escribiendo el número correspondiente:',
   invalidOption: '⚠️ Opción no válida. Por favor, elige una categoría válida.',
   selectProduct: (category) => `Has seleccionado la categoría ${category}.\n\nElige un producto:`,
   invalidProduct: '⚠️ Opción no válida. Por favor elige un producto válido.',

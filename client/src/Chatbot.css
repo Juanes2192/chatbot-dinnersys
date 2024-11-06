@@ -1,122 +1,133 @@
 /* Estilos generales */
 body {
-    font-family: sans-serif;
-  }
-  
-  .chatbot-container {
-    padding: 1.25rem;
-    max-width: 42rem;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .chatbot-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-  }
-  
-  /* Área de mensajes */
-  .messages-container {
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    height: 24rem;
-    overflow-y: auto;
-    background-color: #f9fafb;
-  }
-  
-  .message {
-    margin-bottom: 0.5rem;
-    display: flex;
-  }
-  
-  .message-bot {
-    justify-content: flex-start;
-  }
-  
-  .message-user {
-    justify-content: flex-end;
-  }
-  
-  .message-content {
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    max-width: 70%;
-    white-space: pre-wrap;
-  }
-  
-  .message-bot .message-content {
-    background-color: #e5e7eb;
-    color: #1f2937;
-  }
-  
-  .message-user .message-content {
-    background-color: #10b981;
-    color: white;
-  }
-  
-  /* Área de entrada de mensaje */
-  .input-container {
-    display: flex;
-    margin-top: 1rem;
-  }
-  
-  .message-input {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-top-left-radius: 0.375rem;
-    border-bottom-left-radius: 0.375rem;
-  }
-  
-  .message-input:focus {
-    outline: none;
-    ring: 2px solid #10b981;
-  }
-  
-  .send-button {
-    padding: 0.5rem 1rem;
-    background-color: #10b981;
-    color: white;
-    border-top-right-radius: 0.375rem;
-    border-bottom-right-radius: 0.375rem;
-  }
-  
-  .send-button:hover {
-    background-color: #059669;
-  }
-  
-  .send-button:focus {
-    outline: none;
-    ring: 2px solid #10b981;
-  }
-  
-  /* Estilos del carrito */
-  .cart-container {
-    margin-top: 1rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    background-color: white;
-  }
-  
-  .cart-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-  
-  .cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-  
-  .cart-total {
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid #d1d5db;
-    font-weight: bold;
-  }
+  font-family: Arial, sans-serif;
+}
+
+/* Contenedor principal del chatbot */
+.chatbot-container {
+  padding: 1.5rem;
+  max-width: 32rem;
+  margin: 0 auto;
+  font-family: sans-serif;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+/* Encabezado */
+.chatbot-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  color: #333;
+}
+
+/* Área del chat */
+.chatbox {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 1.25rem;
+  height: 24rem;
+  overflow-y: auto;
+  background-color: #f3f4f6;
+}
+
+.chatbox-message {
+  display: flex;
+  margin: 0.5rem 0;
+}
+
+.chatbox-message.bot {
+  justify-content: flex-start;
+}
+
+.chatbox-message.user {
+  justify-content: flex-end;
+}
+
+.chatbox-bubble {
+  padding: 0.75rem;
+  border-radius: 1rem;
+  max-width: 70%;
+  word-wrap: break-word;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chatbox-bubble.bot {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.chatbox-bubble.user {
+  background-color: #10a30296;
+  color: #fff;
+}
+
+/* Input de mensaje */
+.message-input-container {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #d1d5db;
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.message-input {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px 0 0 8px;
+  outline: none;
+  color: #333;
+}
+
+.message-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.message-send-button {
+  padding: 0.5rem 1rem;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+}
+
+.message-send-button:hover {
+  background-color: #218838;
+}
+
+/* Carrito de compras */
+.cart-container {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+}
+
+.cart-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.cart-empty-message {
+  color: #666;
+}
+
+.order-button {
+  padding: 0.5rem 1rem;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.order-button:hover {
+  background-color: #218838;
+}
