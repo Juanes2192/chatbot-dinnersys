@@ -1,0 +1,122 @@
+/* Estilos generales */
+body {
+    font-family: sans-serif;
+  }
+  
+  .chatbot-container {
+    padding: 1.25rem;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .chatbot-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  /* Área de mensajes */
+  .messages-container {
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    height: 24rem;
+    overflow-y: auto;
+    background-color: #f9fafb;
+  }
+  
+  .message {
+    margin-bottom: 0.5rem;
+    display: flex;
+  }
+  
+  .message-bot {
+    justify-content: flex-start;
+  }
+  
+  .message-user {
+    justify-content: flex-end;
+  }
+  
+  .message-content {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    max-width: 70%;
+    white-space: pre-wrap;
+  }
+  
+  .message-bot .message-content {
+    background-color: #e5e7eb;
+    color: #1f2937;
+  }
+  
+  .message-user .message-content {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  /* Área de entrada de mensaje */
+  .input-container {
+    display: flex;
+    margin-top: 1rem;
+  }
+  
+  .message-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-top-left-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
+  }
+  
+  .message-input:focus {
+    outline: none;
+    ring: 2px solid #10b981;
+  }
+  
+  .send-button {
+    padding: 0.5rem 1rem;
+    background-color: #10b981;
+    color: white;
+    border-top-right-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+  }
+  
+  .send-button:hover {
+    background-color: #059669;
+  }
+  
+  .send-button:focus {
+    outline: none;
+    ring: 2px solid #10b981;
+  }
+  
+  /* Estilos del carrito */
+  .cart-container {
+    margin-top: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background-color: white;
+  }
+  
+  .cart-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .cart-total {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #d1d5db;
+    font-weight: bold;
+  }

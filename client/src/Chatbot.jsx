@@ -1,134 +1,85 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import Cart from './Cart';
-
-const socket = io('http://localhost:3000');
+import './Chatbot.css'
 
 function Chatbot() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [cartItems, setCartItems] = useState([]);
-  const [categorias, setCategorias] = useState([]); // Estado para las categorías
+  const [socket, setSocket] = useState(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    // Iniciar la conversación con el bot
-    socket.emit('startConversation');
-    
-    // Cargar las categorías al iniciar el componente
-    obtenerCategorias();
+    const newSocket = io('http://localhost:3000');
+    setSocket(newSocket);
 
-    socket.on('botMessage', (message) => {
+    newSocket.on('connect', () => {
+      console.log('Conectado al servidor');
+      newSocket.emit('startConversation');
+    });
+
+    newSocket.on('botMessage', (message) => {
       setMessages((prevMessages) => [...prevMessages, { sender: 'Bot', text: message }]);
     });
 
-    socket.on('updateCart', (cart) => {
+    newSocket.on('updateCart', (cart) => {
       setCartItems(cart);
     });
 
     return () => {
-      socket.off('botMessage');
-      socket.off('updateCart');
+      newSocket.disconnect();
     };
   }, []);
 
-  // Función para obtener categorías desde la API
-  async function obtenerCategorias() {
-    try {
-      const response = await fetch('http://localhost:3000/api/categorias', {
-        headers: {
-          'Access-Control-Allow-Origin': '*', // Configuración CORS en el lado del cliente
-        },
-      });
-      const categorias = await response.json();
-      setCategorias(categorias);
-      mostrarCategorias(categorias); // Muestra las categorías como mensaje del bot
-    } catch (error) {
-      console.error('Error al obtener categorías:', error);
-    }
-  }
-
-  // Función para mostrar categorías en el chat
-  function mostrarCategorias(categorias) {
-    const mensajeCategorias = `Estas son las categorías disponibles:\n${categorias
-      .map((categoria, index) => `${index + 1}. ${categoria.Nombre}`)
-      .join('\n')}\n\nPor favor, escribe el número de la categoría que deseas ver.`;
-    setMessages((prevMessages) => [...prevMessages, { sender: 'Bot', text: mensajeCategorias }]);
-  }
-
-  // Función para obtener productos de una categoría específica desde la API
-  async function obtenerProductos(categoriaId) {
-    try {
-      const response = await fetch(`http://localhost:3000/api/productos/${categoriaId}`, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
-      const productos = await response.json();
-      mostrarProductos(productos); // Muestra los productos como mensaje del bot
-    } catch (error) {
-      console.error('Error al obtener productos:', error);
-    }
-  }
-
-  // Función para mostrar productos en el chat
-  function mostrarProductos(productos) {
-    const mensajeProductos = `Estos son los productos disponibles en esta categoría:\n${productos
-      .map((producto) => `- ${producto.Nombre}: ${producto.Precio}`)
-      .join('\n')}`;
-    setMessages((prevMessages) => [...prevMessages, { sender: 'Bot', text: mensajeProductos }]);
-  }
-
-  // Manejo del mensaje de usuario para seleccionar una categoría
-  const handleUserMessage = (message) => {
-    const categoriaSeleccionada = parseInt(message.trim(), 10);
-    if (!isNaN(categoriaSeleccionada) && categoriaSeleccionada > 0 && categoriaSeleccionada <= categorias.length) {
-      const categoriaId = categorias[categoriaSeleccionada - 1].CategoriaId;
-      obtenerProductos(categoriaId);
-    } else {
-      setMessages((prevMessages) => [...prevMessages, { sender: 'Bot', text: 'Por favor, selecciona una categoría válida escribiendo su número.' }]);
-    }
-  };
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const sendMessage = () => {
     if (input.trim()) {
       setMessages((prevMessages) => [...prevMessages, { sender: 'Usuario', text: input }]);
-      handleUserMessage(input);
+      socket.emit('userMessage', input);
       setInput('');
     }
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: 'auto', fontFamily: 'Arial, sans-serif' }}>
-      <h2>Chatbot de Pedidos - FastFood</h2>
-      <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '10px', maxHeight: '400px', overflowY: 'scroll', backgroundColor: '#f9f9f9' }}>
+    <div className="p-6 max-w-lg mx-auto font-sans bg-white shadow-lg rounded-lg border border-gray-300">
+      <h2 className="text-2xl font-semibold mb-5 text-center text-gray-800">Chatbot de Pedidos - FastFood</h2>
+      
+      <div className="chatbox border rounded-lg p-5 h-96 overflow-y-auto bg-gray-100">
         {messages.map((msg, index) => (
-          <div key={index} style={{ marginBottom: '10px', display: 'flex', justifyContent: msg.sender === 'Bot' ? 'flex-start' : 'flex-end' }}>
-            <div style={{
-              backgroundColor: msg.sender === 'Bot' ? '#e0e0e0' : '#4CAF50',
-              color: msg.sender === 'Bot' ? '#333' : '#fff',
-              padding: '10px',
-              borderRadius: '15px',
-              maxWidth: '70%',
-              whiteSpace: 'pre-wrap'
-            }}>
+          <div key={index} className={`my-2 flex ${msg.sender === 'Bot' ? 'justify-start' : 'justify-end'}`}>
+            <div
+              className={`p-3 rounded-xl max-w-[70%] whitespace-pre-wrap shadow-md ${
+                msg.sender === 'Bot' ? 'bg-gray-300 text-gray-900' : 'bg-blue-600 text-white'
+              }`}
+            >
               {msg.text}
             </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
-      <div style={{ display: 'flex', marginTop: '10px' }}>
+
+      <div className="mt-4 flex items-center border-t pt-4">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => (e.key === 'Enter' ? sendMessage() : null)}
+          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
           placeholder="Escribe tu mensaje..."
-          style={{ flex: 1, padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+          className="flex-1 px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-700"
         />
-        <button onClick={sendMessage} style={{ marginLeft: '10px', padding: '10px 15px', borderRadius: '4px', border: 'none', backgroundColor: '#4CAF50', color: '#fff' }}>
+        <button
+          onClick={sendMessage}
+          className="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+        >
           Enviar
         </button>
       </div>
+      
       <Cart cartItems={cartItems} />
     </div>
   );
