@@ -1,0 +1,177 @@
+-- Borrado de la base de datos si ya existe y creación de una nueva
+DROP DATABASE IF EXISTS DinnerSys;
+CREATE DATABASE IF NOT EXISTS DinnerSys;
+USE DinnerSys;
+
+-- Tabla Usuarios
+CREATE TABLE IF NOT EXISTS Usuarios (
+    usuarioId INT PRIMARY KEY AUTO_INCREMENT,
+    Cedula VARCHAR(20) UNIQUE NOT NULL,
+    Nombres VARCHAR(50) NOT NULL,
+    Apellidos VARCHAR(50) NOT NULL,
+    TipoUsuario VARCHAR(13) NOT NULL,
+    Inactivo BOOLEAN DEFAULT 0
+);
+
+-- Tabla DatosAcceso (Se llena de manera automática)
+CREATE TABLE IF NOT EXISTS DatosAcceso(
+    usuarioId INT NOT NULL,
+    Usuario VARCHAR(50) NOT NULL,
+    Contrasena VARCHAR(50) NOT NULL,
+    PRIMARY KEY (usuarioId),
+    FOREIGN KEY (usuarioId) REFERENCES Usuarios(usuarioId) ON DELETE CASCADE
+);
+
+-- Tabla Categorias
+CREATE TABLE IF NOT EXISTS Categorias(
+    CategoriaId INT AUTO_INCREMENT PRIMARY KEY,
+    NombreCategoria VARCHAR(30) NOT NULL
+);
+
+-- Tabla Productos
+CREATE TABLE IF NOT EXISTS Productos(
+    ProductoId INT PRIMARY KEY AUTO_INCREMENT,
+    Nombre VARCHAR(140) NOT NULL,
+    Descripcion VARCHAR(200) NOT NULL,
+    Categoria INT NULL,
+    Precio INT NOT NULL,
+    Inactivo BOOLEAN DEFAULT 0,
+    FOREIGN KEY (Categoria) REFERENCES Categorias(CategoriaId) ON DELETE SET NULL
+);
+
+-- Tabla Mesas
+CREATE TABLE IF NOT EXISTS Mesas(
+    MesaId INT PRIMARY KEY AUTO_INCREMENT,
+    Estado BOOLEAN DEFAULT 0
+);
+
+-- Tabla Pedidos
+CREATE TABLE IF NOT EXISTS Pedidos (
+    PedidoId INT PRIMARY KEY AUTO_INCREMENT,
+    Comentario TEXT DEFAULT NULL,
+    FechaPedido DATETIME DEFAULT NOW() NOT NULL,
+    Finalizado BOOLEAN DEFAULT 0,
+    MeseroId INT,
+    MesaId INT NOT NULL,
+    FOREIGN KEY (MeseroId) REFERENCES Usuarios(UsuarioId) ON DELETE SET NULL,
+    FOREIGN KEY (MesaId) REFERENCES Mesas(MesaId) ON DELETE CASCADE
+);
+
+-- Tabla DetallePedidoProducto
+CREATE TABLE IF NOT EXISTS DetallePedidoProducto(
+    PedidoProductoId INT PRIMARY KEY AUTO_INCREMENT,
+    PedidoId INT NOT NULL,
+    ProductoId INT NOT NULL,
+    Cantidad INT NOT NULL,
+    FOREIGN KEY (PedidoId) REFERENCES Pedidos(PedidoId) ON DELETE CASCADE,
+    FOREIGN KEY (ProductoId) REFERENCES Productos(ProductoId) ON DELETE CASCADE
+);
+
+-- Tabla PedidosChatbot (Actualizada)
+CREATE TABLE IF NOT EXISTS PedidosChatbot(
+    PedidoChatbotId INT PRIMARY KEY AUTO_INCREMENT,
+    FechaPedido DATETIME DEFAULT NOW() NOT NULL,
+    Estado VARCHAR(20) DEFAULT 'Pendiente',
+    ClienteNombre VARCHAR(50) NOT NULL,
+    ClienteContacto VARCHAR(50) NOT NULL,
+    Direccion VARCHAR(255) NOT NULL,
+    MetodoPago VARCHAR(50) NOT NULL
+);
+
+-- Tabla DetallePedidoChatbot
+CREATE TABLE IF NOT EXISTS DetallePedidoChatbot(
+    DetallePedidoChatbotId INT PRIMARY KEY AUTO_INCREMENT,
+    PedidoChatbotId INT NOT NULL,
+    ProductoId INT NOT NULL,
+    Cantidad INT NOT NULL,
+    FOREIGN KEY (PedidoChatbotId) REFERENCES PedidosChatbot(PedidoChatbotId) ON DELETE CASCADE,
+    FOREIGN KEY (ProductoId) REFERENCES Productos(ProductoId) ON DELETE CASCADE
+);
+
+-- Triggers para insertar datos automáticamente en DatosAcceso
+DELIMITER $$
+CREATE TRIGGER InsertarDatosAcceso AFTER INSERT ON Usuarios
+FOR EACH ROW
+BEGIN
+    INSERT INTO DatosAcceso (usuarioId, Usuario, Contrasena) 
+    VALUES (NEW.usuarioId, CONCAT(REPLACE(NEW.Nombres, ' ', '')), NEW.Cedula);
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER ActualizarDatosAcceso AFTER UPDATE ON Usuarios
+FOR EACH ROW
+BEGIN
+    UPDATE DatosAcceso SET Usuario = CONCAT(REPLACE(NEW.Nombres, ' ', '')), Contrasena = NEW.Cedula 
+    WHERE usuarioId = NEW.usuarioId;
+END$$
+DELIMITER ;
+
+-- Inserciones de prueba en la base de datos
+
+-- Inserciones tabla Usuarios
+INSERT INTO Usuarios (Nombres, Apellidos, Cedula, TipoUsuario) VALUES 
+('Austin', 'Post', '123456789', 'Administrador'),
+('Jerson Andres', 'Herrera', '1731805852', 'Administrador'),
+('Juan Jose', 'Marin', '1202957603', 'Mesero'),
+('John David', 'Doe', '319457302', 'Mesero'),
+('Laura Cristina', 'Lopez Acosta', '583024841', 'Mesero'),
+('Sofia', 'Castillo', '315315', 'Mesero'),
+('User', 'Test', '12345', 'Mesero'),
+('Cocina', '', '000000000', 'Cocina'),
+('Andres Steven', 'Vivas', '1340589420', 'Mesero');
+
+-- Inserciones tabla Categorias
+INSERT INTO Categorias (NombreCategoria) VALUES 
+('Sin asignar'),
+('Comidas'),
+('Postres'),
+('Bebidas');
+
+-- Inserciones tabla Productos
+INSERT INTO Productos (Nombre, Descripcion, Precio, Categoria) VALUES 
+('Arroz Paisa', 'Arroz paisa para 3 personas', 32000, 2),
+('Sandwich de pollo', 'Sandwich de pollo', 5000, 2),
+('Hamburguesa', 'Hamburguesa de carne', 10000, 2),
+('Papas Fritas', 'Papas fritas con queso', 5000, 2),
+('Bandeja frijoles con chuleta de cerdo', 'Bandeja frijoles con chuleta de cerdo individual', 13000, 2),
+('Salchipapa sencilla personal', 'Salchipapa con salchicha, papa y todas las salsas personal', 8000, 2),
+('Tiramisú', 'Tiramisú individual', 8000, 3),
+('Brownie', 'Brownie individual', 8000, 3),
+('Helado', 'Helado de 3 sabores', 10000, 3),
+('Gelatina', 'Gelatina individual', 8000, 3),
+('Ensalada de frutas', 'Ensalada de frutas individual', 10000, 3),
+('Jugo de Naranja', 'Jugo de naranja 500ml', 3000, 4),
+('Agua', 'Agua 500ml', 2000, 4),
+('Cafe', 'Cafe 500ml', 2000, 4),
+('Te', 'Te 500ml', 2000, 4),
+('Coca Cola', 'Coca Cola 500ml', 3500, 4),
+('Pepsi', 'Pepsi 500ml', 3200, 4),
+('Cerveza Aguila', 'Cerveza Aguila Light 500ml', 5000, 4);
+
+-- Inserciones tabla Mesas
+-- Mesas ocupadas
+INSERT INTO Mesas (MesaId, Estado) VALUES (1, 1), (2, 1), (3, 1);
+
+-- Mesas desocupadas
+INSERT INTO Mesas (MesaId) VALUES (4), (5), (6), (7), (8), (9), (10),
+(11), (12), (13), (14), (15), (16), (17), (18), (19), (20);
+
+-- Inserciones tabla Pedidos
+INSERT INTO Pedidos (MeseroId, MesaId) VALUES (6, 1), (5, 2), (4, 3);
+
+-- Inserciones tabla DetallePedidoProducto
+INSERT INTO DetallePedidoProducto (PedidoId, ProductoId, Cantidad) VALUES
+(1, 2, 3), (1, 3, 6), (1, 4, 3), -- Pedido 1
+(2, 1, 2), (2, 8, 2), (2, 5, 2), -- Pedido 2
+(3, 7, 1), (3, 8, 1), (3, 9, 1); -- Pedido 3
+
+-- Inserciones tabla PedidosChatbot
+INSERT INTO PedidosChatbot (ClienteNombre, ClienteContacto, Direccion, MetodoPago) VALUES 
+('Carlos Perez', '0987654321', 'Calle 123, Ciudad', 'Nequi'), 
+('Maria Gomez', '0987654322', 'Av. Central 456, Ciudad', 'Bancolombia');
+
+-- Inserciones tabla DetallePedidoChatbot
+INSERT INTO DetallePedidoChatbot (PedidoChatbotId, ProductoId, Cantidad) VALUES
+(1, 2, 1), (1, 3, 1), -- PedidoChatbot 1
+(2, 4, 2), (2, 5, 1); -- PedidoChatbot 2
