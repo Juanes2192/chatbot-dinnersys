@@ -47,7 +47,7 @@ const botResponses = {
   productAdded: (product, quantity) => `✅ ${product} x ${quantity} ha sido agregado a tu carrito.\n\nElige una opción:\n1. Elegir otro plato de esta categoría\n2. Volver al menú de categorías\n3. Finalizar pedido`,
   cartSummary: (cart) => `🛒 Resumen de tu carrito:\n${getCartSummary(cart)}\n\n¿Deseas continuar con el pedido?\n1. Pagar\n2. Volver al menú principal`,
   selectPayment: '¿Cuál es tu método de pago?\n1. Nequi\n2. Bancolombia\n3. Volver al menú principal',
-  orderCompleted: (paymentMethod) => `Pedido realizado. ¡Gracias por tu compra! Tu método de pago es ${paymentMethod}.`,
+  orderCompleted: (paymentMethod) => `Pedido realizado. ¡Gracias por tu compra! El método de pago es ${paymentMethod}. Debes realizar el pago al numero 3158770011`,
   requestName: 'Por favor, ingresa tu nombre:',
   requestPhone: '[Nombre del usuario], por favor ingresa tu número de teléfono:',
   requestAddress: 'Por favor, ingresa tu dirección de entrega:'

@@ -1,37 +1,56 @@
 /* Estilos generales */
 body {
   font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* Contenedor principal del chatbot */
 .chatbot-container {
-  padding: 1.5rem;
-  max-width: 32rem;
-  margin: 0 auto;
-  font-family: sans-serif;
+  width: 90vw;
+  max-width: 900px; /* Ancho máximo en escritorio */
+  max-height: 90vh;
+  padding: 1rem;
   background-color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 80vh; /* Altura fija para PC */
 }
 
 /* Encabezado */
+.header-chatbot-container {
+  padding: 1rem;
+  font-family: sans-serif;
+  background-color: #663300;
+  text-align: center;
+  border-radius: 10px 10px 0 0;
+}
+
 .chatbot-title {
   font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 1.25rem;
-  text-align: center;
-  color: #333;
+  color: #ffffff;
+  margin: 0;
 }
 
-/* Área del chat */
+/* Chatbox */
 .chatbox {
+  flex: 1;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  padding: 1.25rem;
-  height: 24rem;
+  padding: 1rem;
   overflow-y: auto;
   background-color: #f3f4f6;
+  margin-bottom: 1rem;
+  height: 60vh; /* Altura fija para mensajes en PC */
 }
 
 .chatbox-message {
@@ -69,9 +88,8 @@ body {
 .message-input-container {
   display: flex;
   align-items: center;
+  padding: 1rem;
   border-top: 1px solid #d1d5db;
-  padding-top: 1rem;
-  margin-top: 1rem;
 }
 
 .message-input {
@@ -101,33 +119,50 @@ body {
   background-color: #218838;
 }
 
-/* Carrito de compras */
-.cart-container {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background-color: #f8f9fa;
+/* Estilos específicos para pantalla de escritorio */
+@media (min-width: 768px) {
+  .chatbot-container {
+    max-width: 500px;
+    height: 80vh; /* Altura fija para escritorio */
+  }
+
+  .chatbox {
+    height: 60vh; /* Altura fija para el área de mensajes */
+  }
 }
 
-.cart-title {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
+/* Estilos específicos para dispositivos móviles */
+@media (max-width: 767px) {
+  .chatbot-container {
+    width: 90vw;
+    height: 85vh;
+    max-height: 85vh;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+  }
 
-.cart-empty-message {
-  color: #666;
-}
+  .header-chatbot-container {
+    flex-shrink: 0;
+    padding: 1rem;
+  }
 
-.order-button {
-  padding: 0.5rem 1rem;
-  background-color: #28a745;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+  .chatbox {
+    height: 65vh; /* Altura fija para mensajes en móviles */
+  }
 
-.order-button:hover {
-  background-color: #218838;
+  .message-input-container {
+    flex-shrink: 0;
+    padding: 1rem;
+    border-top: 1px solid #d1d5db;
+  }
+
+  .message-input {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+  }
+
+  .message-send-button {
+    padding: 0.75rem 1rem;
+  }
 }

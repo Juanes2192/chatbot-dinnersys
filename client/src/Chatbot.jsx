@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
-import Cart from './Cart';
 import './Chatbot.css';
 
 function Chatbot() {
@@ -45,9 +44,11 @@ function Chatbot() {
   };
 
   return (
-    <div className="chatbot-container">
+    <div>
+    <div className='header-chatbot-container'>
       <h2 className="chatbot-title">Chatbot de Pedidos - FastFood</h2>
-      
+    </div>
+    <div className="chatbot-container">
       <div className="chatbox">
         {messages.map((msg, index) => (
           <div key={index} className={`chatbox-message ${msg.sender === 'Bot' ? 'bot' : 'user'}`}>
@@ -75,8 +76,8 @@ function Chatbot() {
           Enviar
         </button>
       </div>
-      
-      <Cart cartItems={cartItems} />
+ 
+    </div>
     </div>
   );
 }
