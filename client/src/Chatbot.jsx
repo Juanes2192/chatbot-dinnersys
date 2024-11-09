@@ -46,7 +46,7 @@ function Chatbot() {
   return (
     <div>
     <div className='header-chatbot-container'>
-      <h2 className="chatbot-title">Chatbot de Pedidos - FastFood</h2>
+      <h2 className="chatbot-title">Chatbot de Pedidos - Foodify</h2>
     </div>
     <div className="chatbot-container">
       <div className="chatbox">
